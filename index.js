@@ -69,6 +69,8 @@ async function run() {
       list.push(URLPREFIX + f.replace(/\\/g, "/"));
     }
   });
-  console.log(list);
+  list.forEach((u) => {
+    console.log(u);
+  });
 }
 run();
