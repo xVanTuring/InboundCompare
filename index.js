@@ -1,14 +1,14 @@
 const md5File = require("md5-file");
 const fs = require("fs");
-const BUILTIN_IGNORE = ["node_modules", ".git", ".gitignore"];
-const { resolve, relative } = require("path");
+const BUILTIN_IGNORE = ["node_modules", ".git", ".gitignore", ".DS_Store"];
+const { resolve, relative, basename } = require("path");
 const { readdir } = require("fs").promises;
 const URLPREFIX = "";
 
 async function* getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true });
   for (const dirent of dirents) {
-    if (BUILTIN_IGNORE.includes(dirent.name)) {
+    if (BUILTIN_IGNORE.includes(basename(dirent.name))) {
       continue;
     }
     const res = resolve(dir, dirent.name);
@@ -22,14 +22,16 @@ async function* getFiles(dir) {
 
 function checkInput() {
   if (process.argv.length !== 4) {
-    return printUsage();
+    printUsage();
+    process.exit()
   }
   const folder1 = process.argv[2];
   const folder2 = process.argv[3];
   const twoFolder =
     fs.statSync(folder1).isDirectory() && fs.statSync(folder2).isDirectory();
   if (!twoFolder) {
-    return printUsage();
+    printUsage();
+    process.exit()
   }
   return {
     old: folder1,
